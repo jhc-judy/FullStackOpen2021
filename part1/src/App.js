@@ -1,61 +1,78 @@
-import React from 'react'
+import React, { useState } from 'react'
+
+const Statistic = ({ name, num }) => {
+    if (name === "positive") {
+        return <p>{name} {num} %</p>
+    } else return <p>{name} {num}</p>
+}
+
+const Statistics = ({ good, neutral, bad, all, avg }) => {
+    
+    return (
+        <>
+            <Statistic name="good" num={good} />
+            <Statistic name="neutral" num={neutral} />
+            <Statistic name="bad" num={bad} />
+            <Statistic name="all" num={all} />
+            <Statistic name="average" num={avg / all} />
+            <Statistic name="positive" num={good / all * 100} />
+        </>
+        )
+}
+
+const Clicked = ({ good, neutral, bad, all, avg }) => {
+    if (all > 0) {
+        return (
+            <Statistics good={good} neutral={neutral} bad={bad} all={all} avg={avg} />
+        )
+    } else {
+        return (
+            <p>no feedbacks given </p>
+            )
+    }
+}
+
+const Button = ({ name, handle }) => {
+    return <button onClick={handle}>{name}</button>
+}
 
 const App = () => {
-    const course = {
-        name: 'Half Stack application development',
-        parts: [
-            {
-                name: 'Fundamentals of React',
-                exercises: 10
-            },
-            {
-                name: 'Using props to pass data',
-                exercises: 7
-            },
-            {
-                name: 'State of a component',
-                exercises: 14
-            }
-        ]
+    // save clicks of each button to its own state
+    const [good, setGood] = useState(0)
+    const [neutral, setNeutral] = useState(0)
+    const [bad, setBad] = useState(0)
+    const [all, setAll] = useState(0)
+    const [avg, setAvg] = useState(0)
+
+    const goodClick = () => {
+        setGood(good + 1)
+        setAll(all + 1)
+        setAvg(avg + 1)
+    }
+
+    const neutralClick = () => {
+        setNeutral(neutral + 1)
+        setAll(all + 1)
+    }
+
+    const badClick = () => {
+        setBad(bad + 1)
+        setAll(all + 1)
+        setAvg(avg - 1)
     }
 
     return (
         <div>
-            <Header course={course} />
-            <Content parts={course.parts} />
-            <Total parts={course.parts} />
+            <h1>give feedback</h1>
+
+            <Button handle={goodClick} name="good" />
+            <Button handle={neutralClick} name="neutral" />
+            <Button handle={badClick} name="bad" />
+
+            <h1>statistics</h1>
+            <Clicked good={good} neutral={neutral} bad={bad} all={all} avg={avg}/>
+            
         </div>
-    )
-}
-const Header = (props) => {
-    return (
-        <>
-            <h1>{props.course.name}</h1>
-        </>
-    )
-}
-
-const Content = (props) => {
-    return (
-        <>
-            <Part part={props.parts[0].name} exercise={props.parts[0].exercises} />
-            <Part part={props.parts[1].name} exercise={props.parts[1].exercises}/>
-            <Part part={props.parts[2].name} exercise={props.parts[2].exercises}/>
-        </>
-    )
-}
-
-const Part = (props) => {
-    return (
-        <p>{props.part} {props.exercise}</p>
-    )
-}
-
-const Total = (props) => {
-    return (
-        <>
-            <p>Number of exercises {props.parts[0].exercises + props.parts[1].exercises + props.parts[2].exercises}</p>
-        </>
     )
 }
 
